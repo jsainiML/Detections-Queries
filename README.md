@@ -11,8 +11,6 @@ Clone this repository.
 Browse and select relevant detection rules or queries.
 Deploy them in your environment.
 
-### How to Use
-Gear Up: Clone the repo:
 ```bash
 git clone https://github.com/jsainiML/detections.git
 ```
