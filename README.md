@@ -14,7 +14,7 @@ Deploy them in your environment.
 ### How to Use
 Gear Up: Clone the repo:
 ```bash
-git clone https://github.com/jsainiML/detections
+git clone https://github.com/jsainiML/detections.git
 ```
 Choose Your Weapon: Pick a rule or query from the folders.
 
