@@ -1,3 +1,5 @@
+// Query will allow you to check for more than 10 users being deleted by either User or Application. 
+
 AuditLogs
 | where OperationName contains "Delete user" 
 | extend Src_Ip = tostring(parse_json(tostring(InitiatedBy.user)).ipAddress)
@@ -6,5 +8,5 @@ AuditLogs
 | extend Actor = iff(isempty(Src_User), Src_App, Src_User)
 | extend Targets = tostring(TargetResources[0].userPrincipalName)
 | where tolower(Result) == 'success'
-| summarize TimeGenerated = make_set(TimeGenerated), Src_Ip=make_set(Src_Ip), Target_User=make_set(Targets), OperationName=make_set(OperationName), Result=make_set(Result), AdditionalDetails=make_set(AdditionalDetails), InitiatedBy=make_set(InitiatedBy), TargetResources=make_set(TargetResources), ResourceId=make_set(ResourceId), target_list=dcount(Targets) by Src_User=Src_User
-| where target_list > 10
+| summarize TimeGenerated = make_set(TimeGenerated), Src_Ip=make_set(Src_Ip), target_list=make_set(Targets), InitiatedBy=make_set(InitiatedBy), TargetResources=make_set(TargetResources), OperationName=make_set(OperationName), Result=make_set(Result), AdditionalDetails=make_set(AdditionalDetails), ResourceId=make_set(ResourceId), target_count=dcount(Targets) by Actor=Actor
+| where target_count > 10
