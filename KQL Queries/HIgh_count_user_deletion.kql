@@ -8,5 +8,5 @@ AuditLogs
 | extend Actor = iff(isempty(Src_User), Src_App, Src_User)
 | extend Targets = tostring(TargetResources[0].userPrincipalName)
 | where tolower(Result) == 'success'
-| summarize TimeGenerated = make_set(TimeGenerated), Src_Ip=make_set(Src_Ip), target_list=make_set(Targets), InitiatedBy=make_set(InitiatedBy), TargetResources=make_set(TargetResources), OperationName=make_set(OperationName), Result=make_set(Result), AdditionalDetails=make_set(AdditionalDetails), ResourceId=make_set(ResourceId), target_count=dcount(Targets) by Actor=Actor
+| summarize TimeGenerated = min(TimeGenerated), Src_Ip=make_set(Src_Ip), target_list=make_set(Targets), InitiatedBy=make_set(InitiatedBy), TargetResources=make_set(TargetResources), OperationName=make_set(OperationName), Result=make_set(Result), AdditionalDetails=make_set(AdditionalDetails), ResourceId=make_set(ResourceId), target_count=dcount(Targets) by Actor=Actor
 | where target_count > 10
