@@ -13,12 +13,12 @@ let FailedLogons = SecurityEvent
          FailedComputer = tostring(Computer),
          FailedActivity = tostring(Activity)
 | project TargetAccount, FailedTime, FailedIpAddress, FailedSubjectAccount, FailedComputer, FailedActivity;
-// Join lockouts and failed logon events on TargetAccount,
-// then filter to only include failed logon events that occurred within 30 minutes before the lockout,
-// and finally summarize additional details.
+// Join lockouts and failed logon events on TargetAccount
 Lockouts
 | join kind=inner FailedLogons on TargetAccount
+// then filter to only include failed logon events that occurred within 30 minutes before the lockout
 | where FailedTime between (LockoutTime - 30m .. LockoutTime)
+// and finally summarize additional details.
 | summarize FailedCount = count(), 
             FailedTimes = make_list(FailedTime), 
             FailedIpAddresses = make_list(FailedIpAddress),
