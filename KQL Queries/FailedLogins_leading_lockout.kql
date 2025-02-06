@@ -1,0 +1,29 @@
+// Define the set of lockout events (EventID 4740)
+let Lockouts = SecurityEvent
+| where EventID == 4740
+| extend LockoutTime = TimeGenerated, TargetAccount = tostring(TargetAccount)
+| project TargetAccount, LockoutTime, LockoutComputer = Computer, LockoutActivity = Activity, EventData;
+// Define the set of failed logon events (EventID 4625)
+let FailedLogons = SecurityEvent
+| where EventID == 4625
+| extend FailedTime = TimeGenerated,
+         TargetAccount = tostring(TargetAccount),
+         FailedIpAddress = tostring(IpAddress),
+         FailedSubjectAccount = tostring(SubjectAccount),
+         FailedComputer = tostring(Computer),
+         FailedActivity = tostring(Activity)
+| project TargetAccount, FailedTime, FailedIpAddress, FailedSubjectAccount, FailedComputer, FailedActivity;
+// Join lockouts and failed logon events on TargetAccount,
+// then filter to only include failed logon events that occurred within 30 minutes before the lockout,
+// and finally summarize additional details.
+Lockouts
+| join kind=inner FailedLogons on TargetAccount
+| where FailedTime between (LockoutTime - 30m .. LockoutTime)
+| summarize FailedCount = count(), 
+            FailedTimes = make_list(FailedTime), 
+            FailedIpAddresses = make_list(FailedIpAddress),
+            FailedSubjectAccounts = make_list(FailedSubjectAccount),
+            FailedComputers = make_list(FailedComputer),
+            FailedActivities = make_list(FailedActivity)
+    by TargetAccount, LockoutTime, LockoutComputer, LockoutActivity, EventData
+| sort by LockoutTime desc
