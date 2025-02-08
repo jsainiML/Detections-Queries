@@ -14,7 +14,7 @@ logsource:
     category: process_creation
     product: windows
 detection:
-    parent_selection:
+    process_selection:
         - Image|endswith:
             - '\cmd.exe'
             - '\powershell.exe'
@@ -32,4 +32,4 @@ detection:
             - ' net stop windefend '
             - ' sc stop "AntivirusService" '
             - ' sc delete "AntivirusService" '
-    condition: parent_selection and command_selection
+    condition: process_selection and command_selection
