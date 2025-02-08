@@ -1,0 +1,37 @@
+// The main goal of this query is to detect sign-ins from new or unusual countries that haven't been seen in the past 30 days for each user. This could indicate:
+//   Potentially compromised accounts
+//   Unauthorized access attempts
+//   Unusual user behavior
+
+//  Base query Filters SigninLogs for successful sign-in activities (ResultType == "0")
+let primary = 
+SigninLogs
+| where OperationName has "Sign-in activity" and ResultType == "0"
+| extend location = geo_info_from_ip_address(IPAddress)
+| extend country = tostring(location.country)
+| project TimeGenerated, OperationName,UserPrincipalName,IPAddress, country,ResultType,AuthenticationDetails,ConditionalAccessStatus,DeviceDetail,RiskDetail,RiskState,SessionId;
+// HistoricalActivity: Sign-ins from the last 30 days up to 1 hour ago & CurrentActivity: Sign-ins within the last hour
+let HistoricalActivity =
+primary
+| where TimeGenerated between (ago(30d) .. ago(1h));
+let CurrentActivity =
+primary
+| where TimeGenerated > ago(1h);
+// Uses a right anti-join to find sign-ins in CurrentActivity with countries not present in HistoricalActivity
+HistoricalActivity
+| join kind=rightanti CurrentActivity on country
+// Summarizes the results by UserPrincipalName, creating lists of relevant information for each user
+| summarize TimeGenerated = make_list(TimeGenerated), 
+            OperationName = make_list(OperationName),
+            IPAddress = make_list(IPAddress),
+            country = make_list(country),
+            ResultType = make_list(ResultType),
+            AuthenticationDetails = make_list(AuthenticationDetails),
+            ConditionalAccessStatus = make_list(ConditionalAccessStatus),
+            DeviceDetail = make_list(DeviceDetail),
+            RiskDetail = make_list(RiskDetail),
+            RiskState = make_list(RiskState),
+            SessionId = make_list(SessionId)
+            by UserPrincipalName
+
+
