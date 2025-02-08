@@ -2,10 +2,6 @@
 Welcome to YODA, your one-stop shop for detection rules! 🎉 Whether you're a Threat hunter, detection engineer or just getting started with cybersecurity, this repo is here to power up your EDR and SIEM game with sigma rules and KQL queries.
 
 
-### 📂 Structure at a Glance
-- Threat actor focused rules.
-- Detection rules for CVEs.
-
 ### How to Use: 🎯 
 Clone this repository.
 Browse and select relevant detection rules or queries.
