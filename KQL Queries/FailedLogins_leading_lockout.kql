@@ -1,3 +1,5 @@
+// This query is designed to help analysts identify potential brute-force or suspicious activities by linking account lockouts with the failed logon attempts that occurred shortly before them.
+
 // Define the set of lockout events (EventID 4740)
 let Lockouts = SecurityEvent
 | where EventID == 4740
