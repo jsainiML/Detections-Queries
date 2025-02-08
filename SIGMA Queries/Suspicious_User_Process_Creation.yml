@@ -1,0 +1,35 @@
+# This Sigma rule is designed to detect potentially malicious command-line activity that could indicate an adversary is attempting to perform system manipulation, credential dumping, or disable key security services.
+
+title: Suspicious User Process Creation
+id: 8d01029e-5d5f-4671-8a08-861afb830a18
+status: 
+description: Detects a suspicious program or command line action
+references:
+    - Internal Research
+    - https://tools.thehacker.recipes/mimikatz/modules
+author: Jaspreet S
+date: 2025-02-08
+modified: 
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    parent_selection:
+        - Image|endswith:
+            - '\cmd.exe'
+            - '\powershell.exe'
+            - '\wscript.exe'
+            - '\cscript.exe'
+    command_selection:
+        - CommandLine|contains:
+            - 'vssadmin delete shadows'  
+            - 'lsadump::'          
+            - 'rpc::'   
+            - 'sekurlsa::'      
+            - 'MiniDump' 
+            - 'net user '
+            - ' net stop eventlog '
+            - ' net stop windefend '
+            - ' sc stop "AntivirusService" '
+            - ' sc delete "AntivirusService" '
+    condition: parent_selection and command_selection
