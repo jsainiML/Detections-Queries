@@ -16,19 +16,8 @@ logsource:
 detection:
     selection_1:
         Image|endswith: '\toshdpdb.exe'
-    selection_dll_sideloading:
         ImageLoaded|endswith: '\toshdpapi.dll'
-    selection_suspicious_directory:
-        Image|contains:
-            - '\AppData\Local\'
-            - '\AppData\Roaming\'
-            - '\Temp\'
-            - '\ProgramData\'
     selection_2:
         ParentImage|endswith: '\toshdpdb.exe'
-        Image|endswith:
-            - '\cmd.exe'
-            - '\rundll32.exe'
-            - '\powershell.exe'
-            - '\regsvr32.exe'
-    condition: (selection_1 and (selection_dll_sideloading or selection_suspicious_directory)) or selection_2
+        ImageLoaded|endswith: '\toshdpapi.dll'
+    condition: selection_1 or  selection_2
