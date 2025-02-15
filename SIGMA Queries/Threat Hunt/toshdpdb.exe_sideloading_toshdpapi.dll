@@ -6,7 +6,7 @@ status:
 description: Detects a sideloading technique using toshdpdb.exe
 references:
     - https://www.security.com/threat-intelligence/chinese-espionage-ransomware
-    - https://www.security.com/threat-intelligence/chinese-espionage-ransomware
+    - https://thehackernews.com/2025/02/hackers-exploited-pan-os-flaw-to-deploy.html
 author: Jaspreet S
 date: 2025-02-15
 modified: 
