@@ -1,0 +1,34 @@
+# This Sigma rule is designed to detect the DLL sideloading technique using toshdpdb.exe and the malicious toshdpapi.dll associated with Mustang Panda's PlugX deployment.
+
+title: Suspicious User Process Creation
+id: 8d495bd6-f306-49af-86ce-ff784c9dbb6d
+status: 
+description: Detects a sideloading technique using toshdpdb.exe
+references:
+    - https://www.security.com/threat-intelligence/chinese-espionage-ransomware
+    - https://www.security.com/threat-intelligence/chinese-espionage-ransomware
+author: Jaspreet S
+date: 2025-02-15
+modified: 
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_1:
+        Image|endswith: '\toshdpdb.exe'
+    selection_dll_sideloading:
+        ImageLoaded|endswith: '\toshdpapi.dll'
+    selection_suspicious_directory:
+        Image|contains:
+            - '\AppData\Local\'
+            - '\AppData\Roaming\'
+            - '\Temp\'
+            - '\ProgramData\'
+    selection_2:
+        ParentImage|endswith: '\toshdpdb.exe'
+        Image|endswith:
+            - '\cmd.exe'
+            - '\rundll32.exe'
+            - '\powershell.exe'
+            - '\regsvr32.exe'
+    condition: (selection_1 and (selection_dll_sideloading or selection_suspicious_directory)) or selection_2
